@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from app.security.google_auth import router as google_auth_router
+from app.security.google_auth import router as google_auth
 from app.views.login_router import router as login_router
 from app.views.profile_router import router as profile_router
 
