@@ -8,7 +8,7 @@ import requests
 from app.database.database import Base, engine, get_db
 from app.database.models import User
 
-router = APIRouter()  # тут тільки router, не FastAPI()
+router = APIRouter()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
