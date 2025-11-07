@@ -5,6 +5,6 @@ from app.views.profile_router import router as profile_router
 
 app = FastAPI()
 
-app.include_router(google_auth_router)  # /auth/login, /auth/callback
-app.include_router(login_router)        # /login
-app.include_router(profile_router)      # /profile
+app.include_router(google_auth_router)
+app.include_router(login_router)
+app.include_router(profile_router)
