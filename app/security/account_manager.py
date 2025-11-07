@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Cookie
+from fastapi import APIRouter, Depends, HTTPException, Cookie, Header
+import requests
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.database.models import User
@@ -6,20 +7,25 @@ from app.database.models import User
 router = APIRouter(prefix="/account", tags=["Account Management"])
 
 
-def get_current_user(user_id: str = Cookie(None), db: Session = Depends(get_db)):
-    """
-    Shared dependency — checks if a user is authenticated and returns DB user
-    """
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Authentication required")
+def get_current_user(authorization: str = Header(None), db: Session = Depends(get_db)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authorization required")
+    
+    id_token = authorization.split(" ")[1]
 
-    user = db.query(User).filter(User.id == int(user_id)).first()
-
+    # Перевіряємо токен через Google API
+    resp = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}").json()
+    
+    email = resp.get("email")
+    if not email:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Шукаємо користувача в БД
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-
+    
     return user
-
 
 @router.get("/me")
 def get_my_profile(user: User = Depends(get_current_user)):
