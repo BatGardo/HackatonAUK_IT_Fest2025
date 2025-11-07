@@ -1,7 +1,8 @@
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi import FastAPI, Depends
 import os
+import requests
 from sqlalchemy.orm import Session
 from database import Base, engine, get_db
 from models import User
@@ -9,8 +10,9 @@ from schemas import UserCreate, UserResponse
 
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.getenv(" GOOGLE_CLIENT_SECRET")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
+
 app = FastAPI()
 
 
@@ -30,7 +32,6 @@ def login_with_google():
 def google_callback(code: str, db: Session = Depends(get_db)):
     """Обробка відповіді від Google OAuth"""
 
-    # обмін коду на access_token
     token_data = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
@@ -48,7 +49,6 @@ def google_callback(code: str, db: Session = Depends(get_db)):
     if not access_token:
         return {"error": "Google did not send access token"}
 
-    # отримуємо дані користувача
     user_info = requests.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
         headers={"Authorization": f"Bearer {access_token}"}
@@ -58,11 +58,9 @@ def google_callback(code: str, db: Session = Depends(get_db)):
     email = user_info["email"]
     name = user_info.get("name", "No name")
 
-    # шукаємо користувача по email
     user = db.query(User).filter(User.email == email).first()
 
     if not user:
-        # створюємо нового
         user = User(name=name, email=email, google_id=google_id)
         db.add(user)
         db.commit()
@@ -75,11 +73,15 @@ def google_callback(code: str, db: Session = Depends(get_db)):
         "email": user.email
     }
 
+
+# Static files (frontend)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 @app.get("/")
 def root_page():
     return FileResponse("static/index.html")
+
 
 @app.on_event("startup")
 def on_startup():
