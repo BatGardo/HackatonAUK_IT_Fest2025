@@ -6,15 +6,21 @@ from app.database.models import User
 router = APIRouter(prefix="/account", tags=["Account Management"])
 
 
-def get_current_user(user_id: str = Cookie(None), db: Session = Depends(get_db)):
-    """
-    Shared dependency — checks if a user is authenticated and returns DB user
-    """
-    if not user_id:
+def get_current_user(id_token: str = Cookie(None), db: Session = Depends(get_db)):
+    if not id_token:
         raise HTTPException(status_code=401, detail="Authentication required")
 
-    user = db.query(User).filter(User.id == int(user_id)).first()
+    google_validation = requests.get(
+        "https://oauth2.googleapis.com/tokeninfo",
+        params={"id_token": id_token}
+    ).json()
 
+    if "email" not in google_validation:
+        raise HTTPException(status_code=401, detail="Invalid Google token")
+
+    email = google_validation["email"]
+
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
