@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from app.security.google_auth import router as google_router
 import os
 
+
+app.include_router(google_router)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = FastAPI()
