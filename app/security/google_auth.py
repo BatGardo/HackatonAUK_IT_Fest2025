@@ -1,21 +1,20 @@
-    from fastapi import APIRouter, Depends, Request
-    from fastapi.responses import RedirectResponse, FileResponse
-    from sqlalchemy.orm import Session
-    import os
-    import requests
+# app/security/google_auth.py
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+import os
+import requests
 
-    from app.database.database import Base, engine, get_db
-    from app.database.models import User
+from app.database.database import Base, engine, get_db
+from app.database.models import User
 
-router = APIRouter()
+router = APIRouter()  # тут тільки router, не FastAPI()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI") 
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")  # наприклад, https://.../auth/callback
 
-app = FastAPI()
-
-@app.get("/auth/login")
+@router.get("/auth/login")
 def login_with_google():
     google_auth_url = (
         "https://accounts.google.com/o/oauth2/v2/auth"
@@ -26,11 +25,9 @@ def login_with_google():
     )
     return RedirectResponse(google_auth_url)
 
-
-@app.get("/auth/callback")
+@router.get("/auth/callback")
 def google_callback(request: Request, db: Session = Depends(get_db)):
     code = request.query_params.get("code")
-
     token_data = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
@@ -61,10 +58,6 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-    # створюємо cookie сесії
     response = RedirectResponse("/profile")
     response.set_cookie("user_id", str(user.id), httponly=True)
     return response
-
-app.include_router(login_router)
-app.include_router(profile_router)
