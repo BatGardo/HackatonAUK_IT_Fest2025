@@ -10,6 +10,8 @@ from app.security.auth import auth_required
 from app.views.login_router import router as login_router
 from app.views.profile_router import router as profile_router
 
+router = APIRouter()
+
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI") 
