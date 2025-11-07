@@ -1,6 +1,7 @@
 # app/security/google_auth.py
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import os
 import requests
