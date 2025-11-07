@@ -5,10 +5,12 @@ from app.security.google_auth import router as google_router
 import os
 
 
-app.include_router(google_router)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = FastAPI()
+
+app.include_router(google_router)
+
 
 # Віддаємо assets (JS, CSS, зображення)
 app.mount("/assets", StaticFiles(directory=os.path.join(BASE_DIR, "frontend/dist/assets")), name="assets")
