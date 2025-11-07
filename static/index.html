@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>FastAPI + Render Test</title>
+</head>
+<body>
+<h2>Перевірка бекенду FastAPI</h2>
+
+<form id="userForm">
+    <label>Ім'я: </label>
+    <input type="text" id="name" />
+    <button type="submit">Створити юзера</button>
+</form>
+
+<hr>
+
+<button onclick="loadUsers()">Завантажити список юзерів</button>
+<ul id="userList"></ul>
+
+<script>
+document.getElementById("userForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+
+    await fetch("/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+    });
+
+    alert("Юзера створено!");
+});
+
+
+async function loadUsers() {
+    const res = await fetch("/users");
+    const data = await res.json();
+
+    const list = document.getElementById("userList");
+    list.innerHTML = "";
+
+    data.forEach(u => {
+        const li = document.createElement("li");
+        li.textContent = `${u.id}: ${u.name}`;
+        list.appendChild(li);
+    });
+}
+</script>
+
+</body>
+</html>
