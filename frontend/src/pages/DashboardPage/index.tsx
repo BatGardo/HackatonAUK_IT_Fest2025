@@ -1,6 +1,14 @@
+import { Button } from "@/components/base/buttons/button";
 import Header from "@/components/Header";
+import { useNavigate } from "react-router-dom";
 
 export const DashboardPage = () => {
+  const navigate = useNavigate();
+  
+  const goToCVBuilder = () => {
+    navigate('/cv-builder');
+  };
+
   return (
     <div className="min-h-screen bg-white w-full">
       {/* Sticky Header */}
@@ -46,9 +54,9 @@ export const DashboardPage = () => {
                     PDF export
                   </li>
                 </ul>
-                <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-                  Start Building CV
-                </button>
+                <Button onClick={goToCVBuilder} size="xl">
+                  Build Your CV Now
+                </Button>
               </div>
             </div>
 
