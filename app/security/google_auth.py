@@ -28,6 +28,8 @@ def login_with_google():
 @router.get("/auth/callback")
 def google_callback(request: Request, db: Session = Depends(get_db)):
     code = request.query_params.get("code")
+    print("Google AUTH CODE:", code)  # <--- LOG
+
     token_data = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
@@ -41,11 +43,19 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         data=token_data
     ).json()
 
+    print("TOKEN RESPONSE:", token_response)  # <--- LOG
+
     access_token = token_response.get("access_token")
+    id_token = token_response.get("id_token")
+
+    print("ID TOKEN:", id_token)  # <--- LOG
+
     user_info = requests.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
         headers={"Authorization": f"Bearer {access_token}"}
     ).json()
+
+    print("USER INFO:", user_info)  # <--- LOG
 
     user = db.query(User).filter(User.email == user_info["email"]).first()
     if not user:
