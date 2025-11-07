@@ -1,6 +1,7 @@
 # app/security/google_auth.py
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import os
 import requests
@@ -8,7 +9,7 @@ import requests
 from app.database.database import Base, engine, get_db
 from app.database.models import User
 
-router = APIRouter()  # тут тільки router, не FastAPI()
+router = APIRouter()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
@@ -28,6 +29,8 @@ def login_with_google():
 @router.get("/auth/callback")
 def google_callback(request: Request, db: Session = Depends(get_db)):
     code = request.query_params.get("code")
+    print("Google AUTH CODE:", code)  # <--- LOG
+
     token_data = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
@@ -41,11 +44,19 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         data=token_data
     ).json()
 
+    print("TOKEN RESPONSE:", token_response)  # <--- LOG
+
     access_token = token_response.get("access_token")
+    id_token = token_response.get("id_token")
+
+    print("ID TOKEN:", id_token)  # <--- LOG
+
     user_info = requests.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
         headers={"Authorization": f"Bearer {access_token}"}
     ).json()
+
+    print("USER INFO:", user_info)  # <--- LOG
 
     user = db.query(User).filter(User.email == user_info["email"]).first()
     if not user:
@@ -59,5 +70,24 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         db.refresh(user)
 
     response = RedirectResponse("/profile")
-    response.set_cookie("user_id", str(user.id), httponly=True)
+    response.set_cookie(
+        "user_id",
+        str(user.id),
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/"
+    )
     return response
+
+@router.post("/auth/logout")
+def logout():
+    res = JSONResponse({"message": "Logged out successfully"})
+    res.delete_cookie(
+        key="user_id",
+        path="/",
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+    return res
