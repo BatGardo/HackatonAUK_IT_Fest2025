@@ -7,10 +7,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = FastAPI()
 
-# Підключаємо статичні файли (JS, CSS, зображення)
+# Віддаємо JS/CSS/asset файли
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "frontend/dist/assets")), name="static")
 
-# Всі інші запити повертають index.html (SPA fallback)
+# Всі інші запити повертають index.html
 @app.get("/{full_path:path}")
-def spa_router(full_path: str):
+async def spa_router(full_path: str):
     return FileResponse(os.path.join(BASE_DIR, "frontend/dist/index.html"))
