@@ -43,6 +43,9 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         "https://oauth2.googleapis.com/token",
         data=token_data
     ).json()
+    access_token = token_response.get("access_token")
+    id_token = token_response.get("id_token")
+
 
     print("TOKEN RESPONSE:", token_response)  # <--- LOG
 
@@ -69,16 +72,10 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-    response = RedirectResponse("/profile")
-    response.set_cookie(
-        "id_token",
-        id_token,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        path="/"
-    )
-    return response
+    return JSONResponse({
+        "message": "Logged in successfully",
+        "id_token": id_token
+    })
 
 @router.post("/auth/logout")
 def logout():

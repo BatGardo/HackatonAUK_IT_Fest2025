@@ -6,26 +6,25 @@ from app.database.models import User
 router = APIRouter(prefix="/account", tags=["Account Management"])
 
 
-def get_current_user(id_token: str = Cookie(None), db: Session = Depends(get_db)):
-    if not id_token:
-        raise HTTPException(status_code=401, detail="Authentication required")
+def get_current_user(authorization: str = Header(None), db: Session = Depends(get_db)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authorization required")
+    
+    id_token = authorization.split(" ")[1]
 
-    google_validation = requests.get(
-        "https://oauth2.googleapis.com/tokeninfo",
-        params={"id_token": id_token}
-    ).json()
-
-    if "email" not in google_validation:
-        raise HTTPException(status_code=401, detail="Invalid Google token")
-
-    email = google_validation["email"]
-
+    # Перевіряємо токен через Google API
+    resp = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}").json()
+    
+    email = resp.get("email")
+    if not email:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Шукаємо користувача в БД
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-
+    
     return user
-
 
 @router.get("/me")
 def get_my_profile(user: User = Depends(get_current_user)):
