@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends, Request
-from fastapi.responses import RedirectResponse, FileResponse
-from sqlalchemy.orm import Session
-import os
-import requests
+    from fastapi import APIRouter, FastAPI, Depends, Request
+    from fastapi.responses import RedirectResponse, FileResponse
+    from sqlalchemy.orm import Session
+    import os
+    import requests
 
-from app.database.database import Base, engine, get_db
-from app.database.models import User
+    from app.database.database import Base, engine, get_db
+    from app.database.models import User
 
 router = APIRouter()
 
