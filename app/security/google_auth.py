@@ -12,7 +12,7 @@ router = APIRouter()  # тут тільки router, не FastAPI()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")  # наприклад, https://.../auth/callback
+REDIRECT_URI = os.getenv("OAUTH_REDIRECT_URI")  # наприклад, https://.../auth/callback
 
 @router.get("/auth/login")
 def login_with_google():
