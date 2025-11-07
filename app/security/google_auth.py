@@ -78,7 +78,7 @@ def logout():
     res.delete_cookie(
         key="user_id",
         path="/",
-        httponly=True
+        httponly=True,
         secure=True,
         samesite="lax"
     )
