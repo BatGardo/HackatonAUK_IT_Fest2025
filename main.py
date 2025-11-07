@@ -1,3 +1,5 @@
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi import FastAPI, Depends
 import os
 from sqlalchemy.orm import Session
@@ -7,15 +9,16 @@ from schemas import UserCreate, UserResponse
 
 app = FastAPI()
 
-# створення таблиць при першому запуску
+# роздача статичних файлів
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+def root_page():
+    return FileResponse("static/index.html")
+
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
-
-
-@app.get("/")
-def root():
-    return {"message": "Backend is running on Render ✅"}
 
 
 @app.post("/user", response_model=UserResponse)
