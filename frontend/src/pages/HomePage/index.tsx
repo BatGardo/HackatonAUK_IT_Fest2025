@@ -161,7 +161,9 @@ export const HomePage = () => {
           title="Welcome to HireMind!"
           subtitle="Sign in to boost your career!"
           content={
-            <SocialButton social="google" theme="brand">
+            <SocialButton social="google" theme="brand"
+              onClick={() => {fetch("https://hackatonauk-it-fest2025.onrender.com/auth/login")
+              }}>
               Sign in with Google
             </SocialButton>
           }
