@@ -71,3 +71,15 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     response = RedirectResponse("/profile")
     response.set_cookie("user_id", str(user.id), httponly=True)
     return response
+
+@router.post("/auth/logout")
+def logout():
+    res = JSONResponse({"message": "Logged out successfully"})
+    res.delete_cookie(
+        key="user_id",
+        path="/",
+        httponly=True
+        secure=True,
+        samesite="lax"
+    )
+    return res

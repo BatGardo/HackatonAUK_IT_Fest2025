@@ -32,20 +32,6 @@ def get_my_profile(user: User = Depends(get_current_user)):
         "email": user.email,
     }
 
-
-@router.post("/logout")
-def logout():
-    """
-    Removes cookie and logs user out
-    """
-    response = {"message": "Logged out successfully"}
-    from fastapi.responses import JSONResponse
-
-    res = JSONResponse(response)
-    res.delete_cookie("user_id")
-    return res
-
-
 @router.put("/update")
 def update_account(name: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
