@@ -8,3 +8,12 @@ app = FastAPI()
 app.include_router(google_auth_router)
 app.include_router(login_router)
 app.include_router(profile_router)
+
+
+@app.get("/")
+def root():
+    return FileResponse("frontend/dist/index.html")
+
+@app.get("/{full_path:path}")
+def spa_router(full_path: str):
+    return FileResponse("frontend/dist/index.html")
