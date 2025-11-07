@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Welcome to your profile!</h1>
+    <div id="user-info">
+        <p>Loading user info...</p>
+    </div>
+
+    <script>
+        async function fetchProfile() {
+            const res = await fetch('/profile', {
+                method: 'GET',
+                credentials: 'include' // щоб cookie пішли
+            });
+            const data = await res.json();
+            document.getElementById('user-info').innerHTML = `
+                <p>ID: ${data.id}</p>
+                <p>Name: ${data.name}</p>
+                <p>Email: ${data.email}</p>
+            `;
+        }
+
+        fetchProfile();
+    </script>
+</body>
+</html>
