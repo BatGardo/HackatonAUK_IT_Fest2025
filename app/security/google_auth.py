@@ -28,9 +28,10 @@ def login_with_google():
 
 @router.get("/auth/callback")
 def google_callback(request: Request, db: Session = Depends(get_db)):
+    # Отримуємо код з параметрів запиту
     code = request.query_params.get("code")
-    print("Google AUTH CODE:", code)  # <--- LOG
 
+    # Отправка запиту на отримання токену за допомогою отриманого коду
     token_data = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
@@ -43,26 +44,25 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         "https://oauth2.googleapis.com/token",
         data=token_data
     ).json()
+
+    # Отримуємо access_token і id_token з відповіді
     access_token = token_response.get("access_token")
     id_token = token_response.get("id_token")
 
+    # Виводимо токени в консоль
+    print("Access Token:", access_token)
+    print("ID Token:", id_token)
 
-    print("TOKEN RESPONSE:", token_response)  # <--- LOG
-
-    access_token = token_response.get("access_token")
-    id_token = token_response.get("id_token")
-
-    print("ID TOKEN:", id_token)  # <--- LOG
-
+    # Отримуємо інформацію про користувача за допомогою access_token
     user_info = requests.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
         headers={"Authorization": f"Bearer {access_token}"}
     ).json()
 
-    print("USER INFO:", user_info)  # <--- LOG
-
+    # Перевіряємо, чи існує користувач у БД
     user = db.query(User).filter(User.email == user_info["email"]).first()
     if not user:
+        # Якщо користувач не знайдений, створюємо новий
         user = User(
             name=user_info.get("name", "No name"),
             email=user_info["email"],
@@ -72,8 +72,29 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
+    # Створюємо редірект на дашборд, додаючи токени в куки
+    response = RedirectResponse("/dashboard")
+    response.set_cookie(
+        "access_token",
+        access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/"
+    )
+    response.set_cookie(
+        "id_token",
+        id_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/"
+    )
+
+    # Повертаємо JSON відповідь для виведення токенів
     return JSONResponse({
         "message": "Logged in successfully",
+        "access_token": access_token,
         "id_token": id_token
     })
 
