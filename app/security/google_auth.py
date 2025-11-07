@@ -6,9 +6,6 @@ import requests
 
 from app.database.database import Base, engine, get_db
 from app.database.models import User
-from app.security.auth import auth_required  
-from app.views.login_router import router as login_router
-from app.views.profile_router import router as profile_router
 
 router = APIRouter()
 
