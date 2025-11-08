@@ -1,3 +1,4 @@
+from uuid import uuid4
 from fastapi import APIRouter
 from app.services.gemini_client import ask_gemini
 
