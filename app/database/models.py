@@ -8,4 +8,3 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=True)
     google_id = Column(String, unique=True, index=True, nullable=True)
-    cvs = relationship("CV", back_populates="user", cascade="all, delete-orphan")
