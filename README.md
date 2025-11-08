@@ -57,10 +57,12 @@ HackatonAUK_IT_Fest2025/
 │   ├── package.json                      # Frontend dependencies
 │   └── tailwind.config.js               # Styling configuration
 └── app/                              # Backend services
-    ├── security/                             # Authentication service
+    ├── security/                             # Authentication service and account
     |-- schemas/
-    ├── views/                               # AI integration service
-    └── database/                         # Data persistence layer
+    ├── views/                               # Routers
+    ├── database/                         # Data persistence layer
+    └── services/                         # Gemini integration
+
     
 ```
 
