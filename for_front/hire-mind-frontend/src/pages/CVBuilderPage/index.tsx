@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from "react-to-print";
 import { getProfile, type User } from '@/api/auth';
 import { useTranslation } from 'react-i18next';
+import { interviewAPI } from '@/api/interview';
 
 declare global {
   interface Window {
@@ -59,6 +60,9 @@ export const CVBuilderPage = () => {
 
   const [selectedTemplate, setSelectedTemplate] = useState<CVTemplate>('modern');
   const [user, setUser] = useState<User | null>(null);
+  const [isLLMMode, setIsLLMMode] = useState(false);
+  const [llmPrompt, setLlmPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const printRef = useRef(null);
   const handlePrint = useReactToPrint({
@@ -169,6 +173,83 @@ export const CVBuilderPage = () => {
     alert('CV saved successfully!');
   };
 
+  const handleGenerateCV = async () => {
+    if (!llmPrompt.trim()) {
+      alert(t('Please enter a description to generate your CV.'));
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const response = await interviewAPI.generateCV(llmPrompt);
+      
+      if (response) {
+        try {
+          // Clean the AI response to extract JSON content
+          let cleanedResponse = response.trim();
+          
+          // Remove ```json and ``` wrapper if present
+          if (cleanedResponse.startsWith('```json')) {
+            cleanedResponse = cleanedResponse.replace(/^```json\s*/, '');
+          }
+          if (cleanedResponse.endsWith('```')) {
+            cleanedResponse = cleanedResponse.replace(/\s*```$/, '');
+          }
+          // Also handle cases where it might start with just ```
+          if (cleanedResponse.startsWith('```')) {
+            cleanedResponse = cleanedResponse.replace(/^```\s*/, '');
+          }
+          
+          // Parse the cleaned AI response to extract CV data
+          const aiGeneratedCV = JSON.parse(cleanedResponse);
+          
+          // Map the AI response to our CVData structure
+          const newCvData: CVData = {
+            aboutMe: aiGeneratedCV.aboutMe || '',
+            professionalTitle: aiGeneratedCV.professionalTitle || '',
+            education: (aiGeneratedCV.education || []).map((edu: any, index: number) => ({
+              id: (Date.now() + index).toString(),
+              institution: edu.institution || '',
+              degree: edu.degree || '',
+              field: edu.field || '',
+              startYear: edu.startYear || '',
+              endYear: edu.endYear || '',
+              description: edu.description || ''
+            })),
+            experience: (aiGeneratedCV.experience || []).map((exp: any, index: number) => ({
+              id: (Date.now() + index + 1000).toString(),
+              company: exp.company || '',
+              position: exp.position || '',
+              startDate: exp.startDate || '',
+              endDate: exp.endDate || '',
+              current: exp.current || false,
+              description: exp.description || ''
+            })),
+            skills: (aiGeneratedCV.skills || []).map((skill: any, index: number) => ({
+              id: (Date.now() + index + 2000).toString(),
+              name: skill.name || '',
+              level: skill.level || 'Beginner'
+            }))
+          };
+
+          setCvData(newCvData);
+          alert(t('CV generated successfully!'));
+        } catch (parseError) {
+          console.error('Failed to parse AI response:', parseError);
+          console.error('Original response:', response);
+          alert(t('Failed to parse the generated CV. Please try again.'));
+        }
+      } else {
+        alert(t('Failed to generate CV. Please try again.'));
+      }
+    } catch (error) {
+      console.error('Failed to generate CV:', error);
+      alert(t('Failed to generate CV. Please try again.'));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   /* const handleDownloadDocx = async () => {
     if (printRef.current) {
       const htmlContent = (printRef.current as HTMLElement).innerHTML;
@@ -189,13 +270,73 @@ export const CVBuilderPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       <div className="max-w-7xl mx-auto py-8 px-4">
-        <div className='w-full flex justify-start'>
-          <Button onClick={goBack} size="lg" color='secondary' className='mb-4'>{t('Back to Dashboard')}</Button>
+        <div className='w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4'>
+          <Button onClick={goBack} size="lg" color='secondary'>{t('Back to Dashboard')}</Button>
+          
+          {/* Mode Toggle */}
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-gray-700">{t('Mode:')}</span>
+            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setIsLLMMode(false)}
+                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                  !isLLMMode
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {t('Manual')}
+              </button>
+              <button
+                onClick={() => setIsLLMMode(true)}
+                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                  isLLMMode
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {t('AI Generate')}
+              </button>
+            </div>
+          </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">{t('CV Builder')}</h1>
           
+          {isLLMMode ? (
+            /* LLM Mode - AI Generation */
+            <>
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold text-gray-700 mb-4">{t('AI CV Generation')}</h2>
+                <textarea
+                  value={llmPrompt}
+                  onChange={(e) => setLlmPrompt(e.target.value)}
+                  placeholder={t('Describe your background, experience, education, and skills. The AI will generate a complete CV for you. For example: "I am a software engineer with 5 years of experience in React and Node.js. I have a Bachelor\'s degree in Computer Science from XYZ University. I have worked at ABC Company as a Senior Developer..."')}
+                  className="w-full h-40 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isGenerating}
+                />
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={handleGenerateCV}
+                    disabled={!llmPrompt.trim() || isGenerating}
+                    className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isGenerating ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        {t('Generating CV...')}
+                      </span>
+                    ) : (
+                      t('Generate CV with AI')
+                    )}
+                  </button>
+                </div>
+              </section>
+            </>
+          ) : (
+            /* Manual Mode - Traditional Form Fields */
+            <>
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">{t('Choose Template')}</h2>
             <select
@@ -461,6 +602,9 @@ export const CVBuilderPage = () => {
               {t('Save CV')}
             </button>
           </div>
+          </>
+          )}
+
           </div>
 
           <CVPreview 

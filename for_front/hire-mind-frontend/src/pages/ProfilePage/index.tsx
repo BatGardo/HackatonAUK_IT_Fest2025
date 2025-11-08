@@ -144,7 +144,7 @@ export const ProfilePage = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Button onClick={handleBackToDashboard} size="md" color="secondary" disabled={deleting}>Back to Dashboard</Button>
+          <Button onClick={handleBackToDashboard} size="md" color="secondary" disabled={deleting}>{t('Back to Dashboard')}</Button>
 
           <button
             onClick={handleLogout}
@@ -287,7 +287,7 @@ export const ProfilePage = () => {
                     </p>
                   </div>
                   <Button onClick={handleDeleteAccount} size="xl" color="primary-destructive" disabled={deleting}>
-                    {deleting ? 'Deleting...' : 'Delete Account'}
+                    {deleting ? t('Deleting...') : t('Delete Account')}
                   </Button>
                 </div>
               </div>

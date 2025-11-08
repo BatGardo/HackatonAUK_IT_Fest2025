@@ -23,7 +23,16 @@ export const interviewAPI = {
     } catch (error) {
         console.error('Failed to check answer:', error);
     }
-  }
+  },
+  generateCV: async (textPrompt: string) => {
+    try {
+      const prompt = `Create CV JSON from: ${textPrompt}. Format: {"aboutMe":"summary","professionalTitle":"title","education":[{"institution":"","degree":"","field":"","startYear":"","endYear":"","description":""}],"experience":[{"company":"","position":"","startDate":"","endDate":"","current":false,"description":""}],"skills":[{"name":"","level":"Beginner|Intermediate|Advanced|Expert"}]}`;
+      const response = await api.get<AIResponse>('/ai/ask' + `?prompt=${encodeURIComponent(prompt)}`);
+      return response.data.response;
+    } catch (error) {
+      console.error('Failed to generate CV:', error);
+    }
+  },
 };
 
 export const {
