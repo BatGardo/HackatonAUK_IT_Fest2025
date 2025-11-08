@@ -54,6 +54,7 @@ def update_account(name: str, db: Session = Depends(get_db), user: User = Depend
     Updates user's basic profile information (example: name)
     """
     user.name = name
+    user.email = user.email
     db.commit()
     db.refresh(user)
     return {"message": "Profile updated", "name": user.name}
