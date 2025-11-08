@@ -21,9 +21,10 @@ def start_interview(body: dict = None):
     prompt = build_interview_prompt(topic)
     response = ask_gemini(prompt)
     session_store[session_id] = {
-        "topic": topic,
-        "questions": response.get("questions", [])
+        "questions": response.get("questions", []),
+        "topic": topic
     }
+
 
     return {
         "session_id": session_id,

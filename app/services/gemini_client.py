@@ -13,25 +13,32 @@ genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(GEMINI_MODEL)
 
 
-def ask_gemini(prompt: str):
-    """
-    Виконує запит до моделі Gemini і повертає текст або словник з питаннями
-    """
-    response = model.generate_content(
-        prompt,
-        generation_config={
-            "temperature": 0.4,
-            "top_p": 0.9
-        }
-    )
-    text = response.text
+import google.generativeai as genai
 
-    if "QUESTIONS:" in text:
-        questions = text.split("QUESTIONS:")[1].strip().split("\n")
-        questions = [q[q.index(".")+2:].strip() for q in questions if "." in q]
-        return {"questions": questions}
+def ask_gemini(prompt: str) -> dict:
+    """
+    Виконує запит до моделі Gemini і повертає словник з питаннями або текстом
+    """
+    try:
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "temperature": 0.4,
+                "top_p": 0.9
+            }
+        )
+        text = response.text
 
-    return {"text": text} 
+        if "QUESTIONS:" in text:
+            questions = text.split("QUESTIONS:")[1].strip().split("\n")
+            questions = [q[q.index(".")+2:].strip() for q in questions if "." in q]
+            return {"questions": questions}
+
+        return {"text": text}
+
+    except Exception as e:
+        return {"error": str(e)}
+
 
 
 
