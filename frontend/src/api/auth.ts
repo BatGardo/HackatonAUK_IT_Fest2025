@@ -19,12 +19,12 @@ export interface GoogleLoginResponse {
 
 // Auth API endpoints
 export const authAPI = {
-  loginWithGoogle: async () => {
+  loginWithGoogle: () => {
     try {
-        const response = await api.get<ApiResponse<GoogleLoginResponse>>('/auth/login');
-        localStorage.setItem('access_token', response.data.data.id_token);
+      const baseUrl = import.meta.env.VITE_API_URL ?? window.location.origin;
+      window.location.href = `${baseUrl}/auth/login`;
     } catch (error) {
-        console.error('Failed to login with Google:', error);
+      console.error("Failed to start Google login:", error);
     }
   },
 
