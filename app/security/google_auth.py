@@ -63,8 +63,8 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
 
     # Редірект на дашборд з куки
     response = RedirectResponse("/dashboard")
-    response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite="lax", path="/")
-    response.set_cookie("id_token", id_token, httponly=True, secure=True, samesite="lax", path="/")
+    response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="lax", path="/")
+    response.set_cookie("id_token", id_token, httponly=True, secure=False, samesite="lax", path="/")
 
     return response
 
@@ -72,8 +72,8 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
 @router.post("/auth/logout")
 def logout():
     res = JSONResponse({"message": "Logged out successfully"})
-    res.delete_cookie(key="id_token", path="/", httponly=True, secure=True, samesite="lax")
-    res.delete_cookie(key="access_token", path="/", httponly=True, secure=True, samesite="lax")
+    res.delete_cookie(key="id_token", path="/", httponly=True, secure=False, samesite="lax")
+    res.delete_cookie(key="access_token", path="/", httponly=True, secure=False, samesite="lax")
     return res
 
 
