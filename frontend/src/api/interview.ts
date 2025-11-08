@@ -19,7 +19,7 @@ export const interviewAPI = {
         const prompt = `Evaluate the following answer to the question "${question}": "${answer}". Provide a brief feedback on the strengths and areas for improvement and score it from 1 to 10.`;
         const response = await api.get<ApiResponse<AIResponse>>(`/ai/ask?prompt=${prompt}`);
         console.log('Check Answer Response:', response.data);
-        return response.data.response;
+        return response.data.data.response;
     } catch (error) {
         console.error('Failed to check answer:', error);
     }

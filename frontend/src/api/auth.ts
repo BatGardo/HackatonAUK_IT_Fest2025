@@ -32,7 +32,7 @@ export const authAPI = {
     try {
       const response = await api.get<ApiResponse<User>>('/account/me');
       console.log('Profile response data:', response.data);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error('Failed to get profile:', error);
       throw error;
@@ -42,7 +42,7 @@ export const authAPI = {
   updateProfile: async (userData: Partial<Pick<User, 'name' | 'email'>>): Promise<User> => {
     try {
       const response = await api.put<ApiResponse<User>>(`/account/update?name=${userData.name}&email=${userData.email}`);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error('Failed to update profile:', error);
       throw error;
