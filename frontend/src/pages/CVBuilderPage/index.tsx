@@ -1,8 +1,9 @@
-import { CVPreview } from '@/components/CVPreview';
+import { Button } from '@/components/base/buttons/button';
+import { CVPreview, type CVTemplate } from '@/components/CVPreview';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from "react-to-print";
 
-// Add jsPDF import for PDF generation
 declare global {
   interface Window {
     jsPDF: unknown;
@@ -52,10 +53,14 @@ export const CVBuilderPage = () => {
     skills: []
   });
 
+  const [selectedTemplate, setSelectedTemplate] = useState<CVTemplate>('modern');
+
   const printRef = useRef(null);
   const handlePrint = useReactToPrint({
     contentRef: printRef,
   });
+
+  const navigate = useNavigate();
 
   const addEducation = () => {
     const newEducation: EducationEntry = {
@@ -145,15 +150,33 @@ export const CVBuilderPage = () => {
     alert('CV saved successfully!');
   };
 
+  const goBack = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       <div className="max-w-7xl mx-auto py-8 px-4">
+        <Button onClick={goBack} size="lg" color='secondary' className='mb-4'>Back to Dashboard</Button>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Form Panel */}
           <div className="bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">CV Builder</h1>
           
-          {/* Professional Title Section */}
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Choose Template</h2>
+            <select
+              value={selectedTemplate}
+              onChange={(e) => setSelectedTemplate(e.target.value as CVTemplate)}
+              className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="modern">Modern Template</option>
+              <option value="classic">Classic Template</option>
+            </select>
+            <p className="text-sm text-gray-500 mt-2">
+              Select a template style for your CV. You can change this anytime and see the preview update instantly.
+            </p>
+          </section>
+          
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Professional Title</h2>
             <input
@@ -404,7 +427,7 @@ export const CVBuilderPage = () => {
           </div>
 
           {/* Professional CV Preview Panel */}
-          <CVPreview cvData={cvData} onDownloadPDF={handlePrint} ref={printRef} />
+          <CVPreview cvData={cvData} onDownloadPDF={handlePrint} template={selectedTemplate} ref={printRef} />
         </div>
       </div>
     </div>

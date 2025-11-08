@@ -9,6 +9,10 @@ export const DashboardPage = () => {
     navigate('/cv-builder');
   };
 
+  const goToInterviewTrainer = () => {
+    navigate('/interview');
+  };
+
   return (
     <div className="min-h-screen bg-white w-full">
       {/* Sticky Header */}
@@ -85,9 +89,9 @@ export const DashboardPage = () => {
                     Improvement checklist
                   </li>
                 </ul>
-                <button className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-semibold">
-                  Start Interview Practice
-                </button>
+                <Button onClick={goToInterviewTrainer} size="xl" color="secondary">
+                  Start Practicing Now
+                </Button>
               </div>
             </div>
           </div>
