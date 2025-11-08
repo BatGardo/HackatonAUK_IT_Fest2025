@@ -4,6 +4,8 @@ import { Button } from "@/components/base/buttons/button";
 import { SocialButton } from "@/components/base/buttons/social-button";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import heroImage from "@/assets/hero.jpg"; // сверху файла
+
 
 export const HomePage = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -44,7 +46,7 @@ export const HomePage = () => {
             
             {/* Image placeholder */}
             <div className="relative">
-              <img src={'src/assets/hero.jpg'} alt='Hero Image' className="w-full rounded-xl shadow-lg" />
+              <img src={heroImage} alt="Hero Image" className="w-full rounded-xl shadow-lg" />
             </div>
           </div>
         </div>
@@ -152,7 +154,7 @@ export const HomePage = () => {
           subtitle="Sign in to boost your career!"
           content={
             <SocialButton social="google" theme="brand">
-              {t('Sign in with Google')}
+              Sign in with Google
             </SocialButton>
           }
           onClose={() => setIsPopupOpen(false)}
