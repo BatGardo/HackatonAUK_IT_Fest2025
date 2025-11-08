@@ -4,7 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from app.security.google_auth import router as google_router
 from app.security.account_manager import router as account_router
 from app.services.gemini_manager import router as gemini_router
-from app.views.cv_router import router as cv_router
 
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -32,8 +31,6 @@ app.add_middleware(
 app.include_router(google_router)
 app.include_router(account_router)
 app.include_router(gemini_router)
-app.include_router(cv_router)
-
 
 app.mount("/assets", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "dist", "assets")), name="assets")
 
