@@ -74,10 +74,14 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+@router.get("/auth/logout")
+def logout_get():
+    return logout()
+
 @router.post("/auth/logout")
 def logout():
     res = JSONResponse({"message": "Logged out successfully"})
-=    res.delete_cookie(
+    res.delete_cookie(
         key="id_token",
         path="/",
         httponly=True,
