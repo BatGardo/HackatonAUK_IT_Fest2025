@@ -45,9 +45,6 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     access_token = token_response.get("access_token")
     id_token = token_response.get("id_token")
 
-    print("Access Token:", access_token)
-    print("ID Token:", id_token)
-
     user_info = requests.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
         headers={"Authorization": f"Bearer {access_token}"}
@@ -72,8 +69,19 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     return response
 
 
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter
+
+router = APIRouter()
+
 @router.post("/auth/logout")
 def logout():
     res = JSONResponse({"message": "Logged out successfully"})
-    res.delete_cookie("id_token")
+=    res.delete_cookie(
+        key="id_token",
+        path="/",
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
     return res
