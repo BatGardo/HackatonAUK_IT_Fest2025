@@ -1,12 +1,10 @@
-# app/security/google_auth.py
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import RedirectResponse
-from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 import os
 import requests
 
-from app.database.database import Base, engine, get_db
+from app.database.database import get_db
 from app.database.models import User
 
 router = APIRouter()
@@ -14,6 +12,7 @@ router = APIRouter()
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("OAUTH_REDIRECT_URI") 
+
 
 @router.get("/auth/login")
 def login_with_google():
@@ -25,6 +24,7 @@ def login_with_google():
         "&scope=openid%20email%20profile"
     )
     return RedirectResponse(google_auth_url)
+
 
 @router.get("/auth/callback")
 def google_callback(request: Request, db: Session = Depends(get_db)):
@@ -61,7 +61,7 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-    # Створюємо редірект на дашборд і встановлюємо куки
+    # Редірект на дашборд з куки
     response = RedirectResponse("/dashboard")
     response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite="lax", path="/")
     response.set_cookie("id_token", id_token, httponly=True, secure=True, samesite="lax", path="/")
@@ -69,23 +69,14 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     return response
 
 
-from fastapi.responses import JSONResponse
-from fastapi import APIRouter
+@router.post("/auth/logout")
+def logout():
+    res = JSONResponse({"message": "Logged out successfully"})
+    res.delete_cookie(key="id_token", path="/", httponly=True, secure=True, samesite="lax")
+    res.delete_cookie(key="access_token", path="/", httponly=True, secure=True, samesite="lax")
+    return res
 
-router = APIRouter()
 
 @router.get("/auth/logout")
 def logout_get():
     return logout()
-
-@router.post("/auth/logout")
-def logout():
-    res = JSONResponse({"message": "Logged out successfully"})
-    res.delete_cookie(
-        key="id_token",
-        path="/",
-        httponly=True,
-        secure=True,
-        samesite="lax"
-    )
-    return res
