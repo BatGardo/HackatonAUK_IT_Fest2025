@@ -32,7 +32,7 @@ export const authAPI = {
     try {
       const response = await api.get<User>('/account/me');
       console.log('Profile response data:', response.data);
-      return response;
+      return response.data;
     } catch (error) {
       console.error('Failed to get profile:', error);
       throw error;
@@ -42,7 +42,7 @@ export const authAPI = {
   updateProfile: async (userData: Partial<Pick<User, 'name' | 'email'>>): Promise<User> => {
     try {
       const response = await api.put<User>(`/account/update?name=${userData.name}&email=${userData.email}`);
-      return response.data.data;
+      return response.data;
     } catch (error) {
       console.error('Failed to update profile:', error);
       throw error;
@@ -51,7 +51,7 @@ export const authAPI = {
 
   deleteProfile: async (): Promise<{ message: string }> => {
     try {
-      const response = await api.delete<ApiResponse<{ message: string }>>('/account/delete');
+      const response = await api.delete<{ message: string }>('/account/delete');
       
       localStorage.removeItem('access_token');
       
