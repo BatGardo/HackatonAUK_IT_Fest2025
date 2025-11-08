@@ -156,32 +156,86 @@ export const InterviewPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Button onClick={handleBackToDashboard} size="md" color="secondary">
-            Back to Dashboard
-          </Button>
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          {/* Desktop layout - single row */}
+          <div className="hidden sm:flex justify-between items-center">
+            <Button onClick={handleBackToDashboard} size="md" color="secondary">
+              Back to Dashboard
+            </Button>
 
-          <div className="text-center">
-            <h1 className="text-xl font-semibold text-gray-800">Interview Practice</h1>
+            <div className="text-center">
+              <h1 className="text-xl font-semibold text-gray-800">Interview Practice</h1>
+              {!showPositionForm && questions.length > 0 && (
+                <p className="text-sm text-gray-600">
+                  Question {currentQuestionIndex + 1} of {questions.length}
+                </p>
+              )}
+            </div>
+
             {!showPositionForm && questions.length > 0 && (
-              <p className="text-sm text-gray-600">
-                Question {currentQuestionIndex + 1} of {questions.length}
-              </p>
+              <div className="w-32 text-right">
+                <div className="text-sm text-gray-600 mb-1">Progress</div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">{Math.round(progress)}%</div>
+              </div>
             )}
           </div>
 
-          {!showPositionForm && questions.length > 0 && (
-            <div className="w-32 text-right">
-              <div className="text-sm text-gray-600 mb-1">Progress</div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                  style={{ width: `${progress}%` }}
-                ></div>
+          {/* Mobile layout - two levels */}
+          <div className="sm:hidden">
+            {/* Top level - Back button and title */}
+            <div className="flex justify-between items-center mb-3">
+              <Button onClick={handleBackToDashboard} size="sm" color="secondary">
+                <svg 
+                  className="w-4 h-4" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18" 
+                  />
+                </svg>
+              </Button>
+
+              <div className="text-center">
+                <h1 className="text-lg font-semibold text-gray-800">Interview Practice</h1>
+                {!showPositionForm && questions.length > 0 && (
+                  <p className="text-xs text-gray-600">
+                    Question {currentQuestionIndex + 1} of {questions.length}
+                  </p>
+                )}
               </div>
-              <div className="text-xs text-gray-500 mt-1">{Math.round(progress)}%</div>
+
+              <div className="w-8"></div> {/* Spacer for centering */}
             </div>
-          )}
+
+            {/* Bottom level - Progress bar (mobile only) */}
+            {!showPositionForm && questions.length > 0 && (
+              <div className="pt-3 border-t border-gray-100">
+                <div className="w-full">
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="text-xs text-gray-600">Progress</div>
+                    <div className="text-xs text-gray-500">{Math.round(progress)}%</div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -293,24 +347,28 @@ export const InterviewPage = () => {
               )}
 
               {/* Action Buttons */}
-              <div className="flex justify-between items-center">
-                <button
-                  onClick={handlePreviousQuestion}
-                  disabled={currentQuestionIndex === 0}
-                  className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                >
-                  Previous
-                </button>
+              <div className="space-y-4">
+                {/* Previous button on its own row */}
+                <div className="flex justify-start">
+                  <button
+                    onClick={handlePreviousQuestion}
+                    disabled={currentQuestionIndex === 0}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm"
+                  >
+                    Previous
+                  </button>
+                </div>
 
-                <div className="flex gap-4">
+                {/* Action buttons on lower level */}
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleCheckAnswer}
                     disabled={isChecking || !answer.trim()}
-                    className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                    className="flex-1 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm"
                   >
                     {isChecking ? (
-                      <span className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
                         Checking...
                       </span>
                     ) : (
@@ -321,7 +379,7 @@ export const InterviewPage = () => {
                   {showFeedback && (
                     <button
                       onClick={handleNextQuestion}
-                      className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                      className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors text-sm"
                     >
                       {isLastQuestion ? 'Finish Interview' : 'Next Question'}
                     </button>

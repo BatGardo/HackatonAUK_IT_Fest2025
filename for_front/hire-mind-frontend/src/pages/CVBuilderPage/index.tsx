@@ -157,7 +157,9 @@ export const CVBuilderPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       <div className="max-w-7xl mx-auto py-8 px-4">
-        <Button onClick={goBack} size="lg" color='secondary' className='mb-4'>Back to Dashboard</Button>
+        <div className='w-full flex justify-start'>
+          <Button onClick={goBack} size="lg" color='secondary' className='mb-4'>Back to Dashboard</Button>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">CV Builder</h1>
@@ -207,7 +209,8 @@ export const CVBuilderPage = () => {
                 onClick={addEducation}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Add Education
+                <span className="sm:hidden">+</span>
+                <span className="hidden sm:inline">Add Education</span>
               </button>
             </div>
             
@@ -285,7 +288,8 @@ export const CVBuilderPage = () => {
                 onClick={addExperience}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                Add Experience
+                <span className="sm:hidden">+</span>
+                <span className="hidden sm:inline">Add Experience</span>
               </button>
             </div>
             
@@ -371,7 +375,8 @@ export const CVBuilderPage = () => {
                 onClick={addSkill}
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
-                Add Skill
+                <span className="sm:hidden">+</span>
+                <span className="hidden sm:inline">Add Skill</span>
               </button>
             </div>
             
