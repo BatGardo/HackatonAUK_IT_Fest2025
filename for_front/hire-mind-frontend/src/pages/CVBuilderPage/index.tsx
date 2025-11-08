@@ -1,5 +1,7 @@
+import { Button } from '@/components/base/buttons/button';
 import { CVPreview } from '@/components/CVPreview';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useReactToPrint } from "react-to-print";
 
 // Add jsPDF import for PDF generation
@@ -56,6 +58,8 @@ export const CVBuilderPage = () => {
   const handlePrint = useReactToPrint({
     contentRef: printRef,
   });
+
+  const navigate = useNavigate();
 
   const addEducation = () => {
     const newEducation: EducationEntry = {
@@ -145,9 +149,14 @@ export const CVBuilderPage = () => {
     alert('CV saved successfully!');
   };
 
+  const goBack = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       <div className="max-w-7xl mx-auto py-8 px-4">
+        <Button onClick={goBack} size="lg" color='secondary' className='mb-4'>Back to Dashboard</Button>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form Panel */}
           <div className="bg-white rounded-lg shadow-lg p-8">
