@@ -49,15 +49,28 @@ def get_my_profile(user: User = Depends(get_current_user)):
 
 
 @router.put("/update")
-def update_account(name: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+def update_account(
+    name: str | None = None,
+    email: str | None = None,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
     """
-    Updates user's basic profile information (example: name)
+    Updates user's basic profile information (example: name/email)
     """
-    user.name = name
-    user.email = user.email
+    if name:
+        user.name = name
+    if email:
+        user.email = email
+
     db.commit()
     db.refresh(user)
-    return {"message": "Profile updated", "name": user.name}
+
+    return {
+        "message": "Profile updated",
+        "name": user.name,
+        "email": user.email,
+    }
 
 
 @router.delete("/delete")
