@@ -16,9 +16,9 @@ app.include_router(account_router)
 app.include_router(gemini_router)
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIST = os.path.join(BASE_DIR, "frontend", "dist")
+app.mount("/assets", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "dist", "assets")), name="assets")
 
-app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
-
+@app.get("/{full_path:path}")
+async def spa_router(full_path: str):
+    return FileResponse(os.path.join(BASE_DIR, "frontend", "dist", "index.html"))
 
