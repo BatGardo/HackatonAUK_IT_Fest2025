@@ -41,7 +41,6 @@ export const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  // Handle profile update
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -50,6 +49,7 @@ export const ProfilePage = () => {
     try {
       setUpdating(true);
       const updatedUser = await updateProfile(formData);
+      console.log('Updated user:', updatedUser);
       setUser(updatedUser);
       setEditMode(false);
       setSuccess('Profile updated successfully!');
@@ -82,7 +82,7 @@ export const ProfilePage = () => {
       setDeleting(true);
       await deleteProfile();
       alert('Account deleted successfully');
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       setError('Failed to delete account. Please try again.');
       console.error('Delete error:', error);
@@ -95,6 +95,7 @@ export const ProfilePage = () => {
   const handleLogout = async () => {
     try {
       await logout();
+        navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -142,25 +143,7 @@ export const ProfilePage = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <button
-            onClick={handleBackToDashboard}
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <svg 
-              className="w-5 h-5" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M10 19l-7-7m0 0l7-7m-7 7h18" 
-              />
-            </svg>
-            Back to Dashboard
-          </button>
+          <Button onClick={handleBackToDashboard} size="md" color="secondary" disabled={deleting}>Back to Dashboard</Button>
 
           <button
             onClick={handleLogout}
@@ -187,19 +170,6 @@ export const ProfilePage = () => {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Profile Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-12 text-white">
-            <div className="flex items-center gap-6">
-              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold">{user.name}</h1>
-                <p className="text-blue-100">{user.email}</p>
-                <p className="text-blue-200 text-sm mt-1">User ID: {user.id}</p>
-              </div>
-            </div>
-          </div>
 
           {/* Profile Content */}
           <div className="p-8">
@@ -238,7 +208,7 @@ export const ProfilePage = () => {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    Edit Profile
+                    <span className="hidden sm:inline">Edit Profile</span>
                   </button>
                 )}
               </div>
@@ -309,24 +279,18 @@ export const ProfilePage = () => {
               )}
             </div>
 
-            {/* Danger Zone */}
             <div className="mt-12 pt-8 border-t border-gray-200">
-              <h3 className="text-xl font-bold text-red-600 mb-4">Danger Zone</h3>
               <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <div>
-                    <h4 className="text-lg font-medium text-red-800">Delete Account</h4>
-                    <p className="text-red-600 mt-1">
+                    <h4 className="text-lg font-medium text-red-800 text-left">Delete Account</h4>
+                    <p className="text-red-600 mt-1 text-left">
                       Permanently delete your account and all associated data. This action cannot be undone.
                     </p>
                   </div>
-                  <button
-                    onClick={handleDeleteAccount}
-                    disabled={deleting}
-                    className="ml-4 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                  >
+                  <Button onClick={handleDeleteAccount} size="xl" color="primary-destructive" disabled={deleting}>
                     {deleting ? 'Deleting...' : 'Delete Account'}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
