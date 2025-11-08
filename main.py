@@ -15,6 +15,4 @@ app.include_router(google_router)
 app.include_router(account_router)
 app.include_router(gemini_router)
 
-app.mount("/", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "dist"), html=True), name="frontend")
-
-
+app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")

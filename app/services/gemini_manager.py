@@ -5,6 +5,8 @@ from app.services.promts.interview_prompt import build_interview_prompt
 
 router = APIRouter(prefix="/ai", tags=["Gemini"])
 
+session_store = {}
+
 @router.get("/ask")
 def ask_ai(prompt: str):
     answer = ask_gemini(prompt)
@@ -18,7 +20,6 @@ def start_interview(body: dict = None):
 
     prompt = build_interview_prompt(topic)
     response = ask_gemini(prompt)
-
     session_store[session_id] = {
         "topic": topic,
         "questions": response.get("questions", [])

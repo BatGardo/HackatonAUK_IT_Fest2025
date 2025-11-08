@@ -13,33 +13,26 @@ genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(GEMINI_MODEL)
 
 
-def ask_gemini(prompt: str) -> dict:
+def ask_gemini(prompt: str):
     """
-    Виконує запит до моделі Gemini і повертає текст відповіді у форматі інтерв'ю
+    Виконує запит до моделі Gemini і повертає текст або словник з питаннями
     """
-    try:
-        response = model.generate_content(
-            prompt,
-            generation_config={"temperature": 0.4, "top_p": 0.9}
-        )
-        text = response.text.strip()
+    response = model.generate_content(
+        prompt,
+        generation_config={
+            "temperature": 0.4,
+            "top_p": 0.9
+        }
+    )
+    text = response.text
 
-        # очікуємо формат:
-        # Q1: ...
-        # Q2: ...
-        # Q3: ...
-        # Q4: ...
-        # Q5: ...
-        questions = []
-        for line in text.splitlines():
-            line = line.strip()
-            if line.startswith("Q") and ":" in line:
-                questions.append(line.split(":", 1)[1].strip())
-
+    if "QUESTIONS:" in text:
+        questions = text.split("QUESTIONS:")[1].strip().split("\n")
+        questions = [q[q.index(".")+2:].strip() for q in questions if "." in q]
         return {"questions": questions}
 
-    except Exception as e:
-        return {"error": f"❌ Gemini API error: {str(e)}"}
+    return {"text": text} 
+
 
 
 def ask_gemini(prompt: str) -> str:
