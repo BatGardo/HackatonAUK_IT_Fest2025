@@ -1,6 +1,7 @@
 from uuid import uuid4
 from fastapi import APIRouter
 from app.services.gemini_client import ask_gemini
+from app.services.promts.interview_prompt import build_interview_prompt
 
 router = APIRouter(prefix="/ai", tags=["Gemini"])
 
