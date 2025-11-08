@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from app.security.google_auth import router as google_router
 from app.security.account_manager import router as account_router
+from app.routers.gemini_manager import router as gemini_router
 import os
 
 
@@ -12,6 +13,7 @@ app = FastAPI()
 
 app.include_router(google_router)
 app.include_router(account_router)
+app.include_router(gemini_router)
 
 
 # Отдаем статические файлы
