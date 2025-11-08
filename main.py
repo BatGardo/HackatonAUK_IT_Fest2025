@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from app.security.google_auth import router as google_router
 from app.security.account_manager import router as account_router
 from app.services.gemini_manager import router as gemini_router
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
 
@@ -15,16 +16,17 @@ app.include_router(google_router)
 app.include_router(account_router)
 app.include_router(gemini_router)
 
-# для локальних тестів
+# Налаштування CORS
 origins = [
-    "http://localhost:5173",
-    # add more if needed
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:5137"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True, 
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
