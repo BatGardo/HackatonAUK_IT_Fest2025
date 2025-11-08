@@ -9,7 +9,7 @@ export const interviewAPI = {
     try {
         const prompt = `Generate a list of 5 common interview questions for a ${position} position. Return the questions as a list like this: ["Question 1", "Question 2", ...] without any other text.`;
         const response = await api.get<ApiResponse<AIResponse>>(`/ai/ask?prompt=${prompt}`);
-        return response.data.response;
+        return response.data.data.response;
     } catch (error) {
         console.error('Failed to generate questions:', error);
     }
