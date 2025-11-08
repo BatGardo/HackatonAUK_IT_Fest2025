@@ -15,6 +15,19 @@ app.include_router(google_router)
 app.include_router(account_router)
 app.include_router(gemini_router)
 
+# для локальних тестів
+origins = [
+    "http://localhost:5173",
+    # add more if needed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True, 
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/assets", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "dist", "assets")), name="assets")
 
