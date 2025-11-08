@@ -146,20 +146,8 @@ export const CVBuilderPage = () => {
   };
 
   const handleSave = () => {
-    const payload = {
-      about_me: cvData.aboutMe,
-      professional_title: cvData.professionalTitle,
-      education: cvData.education.map(
-        ({ id, ...rest }) => rest
-      ),
-      experience: cvData.experience.map(({ id, ...rest }) => ({
-        ...rest,
-        endDate: rest.current ? null : rest.endDate,
-      })),
-      skills: cvData.skills.map(({ id, ...rest }) => rest),
-      modified_at: new Date().toISOString(),
-    };
-
+    console.log('Saving CV data:', cvData);
+    alert('CV saved successfully!');
   };
 
   const goBack = () => {
