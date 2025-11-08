@@ -1,9 +1,11 @@
 import { Button } from "@/components/base/buttons/button";
 import Header from "@/components/Header";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const goToCVBuilder = () => {
     navigate('/cv-builder');
@@ -25,10 +27,10 @@ export const DashboardPage = () => {
         <div className="mx-auto max-w-4xl">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Welcome! Choose Your Path
+              {t('Welcome! Choose Your Path')}
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Select the tool you'd like to use to advance your career
+              {t("Select the tool you'd like to use to advance your career")}
             </p>
           </div>
 
@@ -39,27 +41,26 @@ export const DashboardPage = () => {
                 <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-200 transition-colors">
                   <span className="text-3xl">📄</span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">CV Builder</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('CV Builder')}</h3>
                 <p className="text-gray-600 mb-6">
-                  Create professional, ATS-friendly resumes that get noticed by employers. 
-                  Fill in your details, preview your CV and export it to PDF.
+                  {t('Create professional, ATS-friendly resumes that get noticed by employers. Fill in your details, preview your CV and export it to PDF.')}
                 </p>
                 <ul className="space-y-3 text-sm text-gray-600 mb-8">
                   <li className="flex items-center justify-center">
                     <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    Professional templates
+                    {t('Professional templates')}
                   </li>
                   <li className="flex items-center justify-center">
                     <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    Real-time preview
+                    {t('Real-time preview')}
                   </li>
                   <li className="flex items-center justify-center">
                     <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    PDF export
+                    {t('PDF export')}
                   </li>
                 </ul>
                 <Button onClick={goToCVBuilder} size="xl">
-                  Build Your CV Now
+                  {t('Build Your CV Now')}
                 </Button>
               </div>
             </div>
@@ -70,27 +71,26 @@ export const DashboardPage = () => {
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
                   <span className="text-3xl">🎤</span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Interview Trainer</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('Interview Trainer')}</h3>
                 <p className="text-gray-600 mb-6">
-                  Practice interviews with AI-powered feedback. Answer 5–8 timed questions 
-                  and get a summary score with improvement suggestions.
+                  {t('Practice interviews with AI-powered feedback. Answer 5–8 timed questions and get a summary score with improvement suggestions.')}
                 </p>
                 <ul className="space-y-3 text-sm text-gray-600 mb-8">
                   <li className="flex items-center justify-center">
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-                    Timed practice sessions
+                    {t('Timed practice sessions')}
                   </li>
                   <li className="flex items-center justify-center">
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-                    AI-powered scoring
+                    {t('AI-powered scoring')}
                   </li>
                   <li className="flex items-center justify-center">
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-                    Improvement checklist
+                    {t('Improvement checklist')}
                   </li>
                 </ul>
                 <Button onClick={goToInterviewTrainer} size="xl" color="secondary">
-                  Start Practicing Now
+                  {t('Start Practicing Now')}
                 </Button>
               </div>
             </div>

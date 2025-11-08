@@ -1,7 +1,7 @@
 import api from './axios';
 
 export interface AIResponse {
-    response: string;
+  response: string;
 }
 
 export const interviewAPI = {
@@ -16,14 +16,23 @@ export const interviewAPI = {
   },
   checkAnswer: async (question: string, answer: string) => {
     try {
-        const prompt = `Evaluate the following answer to the question "${question}": "${answer}". Provide a brief feedback on the strengths and areas for improvement and score it from 1 to 10.`;
+        const prompt = `Evaluate the following answer to the question "${question}": "${answer}". Provide a brief feedback on the strengths and areas for improvement and score it from 1 to 10. Limit your response to 2-3 sentences focusing on key points only.`;
         const response = await api.get<AIResponse>(`/ai/ask?prompt=${prompt}`);
         console.log('Check Answer Response:', response.data);
         return response.data.response;
     } catch (error) {
         console.error('Failed to check answer:', error);
     }
-  }
+  },
+  generateCV: async (textPrompt: string) => {
+    try {
+      const prompt = `Create CV JSON from: ${textPrompt}. Format: {"aboutMe":"summary","professionalTitle":"title","education":[{"institution":"","degree":"","field":"","startYear":"","endYear":"","description":""}],"experience":[{"company":"","position":"","startDate":"","endDate":"","current":false,"description":""}],"skills":[{"name":"","level":"Beginner|Intermediate|Advanced|Expert"}]}`;
+      const response = await api.get<AIResponse>('/ai/ask' + `?prompt=${encodeURIComponent(prompt)}`);
+      return response.data.response;
+    } catch (error) {
+      console.error('Failed to generate CV:', error);
+    }
+  },
 };
 
 export const {

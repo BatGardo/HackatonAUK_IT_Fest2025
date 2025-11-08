@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProfile, updateProfile, deleteProfile, logout, type User } from '@/api/auth';
 import { Button } from '@/components/base/buttons/button';
+import { useTranslation } from 'react-i18next';
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export const ProfilePage = () => {
   const [editMode, setEditMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   // Form state for editing
   const [formData, setFormData] = useState({
@@ -31,7 +33,7 @@ export const ProfilePage = () => {
           email: userData.email
         });
       } catch (error) {
-        setError('Failed to load profile. Please try logging in again.');
+        setError(t('Failed to load profile. Please try logging in again.'));
         console.error('Profile fetch error:', error);
       } finally {
         setLoading(false);
@@ -49,15 +51,14 @@ export const ProfilePage = () => {
     try {
       setUpdating(true);
       const updatedUser = await updateProfile(formData);
-      console.log('Updated user:', updatedUser);
       setUser(updatedUser);
       setEditMode(false);
-      setSuccess('Profile updated successfully!');
-      
+      setSuccess(t('Profile updated successfully!'));
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
-      setError('Failed to update profile. Please try again.');
+      setError(t('Failed to update profile. Please try again.'));
       console.error('Update error:', error);
     } finally {
       setUpdating(false);
@@ -67,13 +68,13 @@ export const ProfilePage = () => {
   // Handle account deletion
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
-      'Are you sure you want to delete your account? This action cannot be undone.'
+      t('Are you sure you want to delete your account? This action cannot be undone.')
     );
 
     if (!confirmed) return;
 
     const doubleConfirm = window.confirm(
-      'This will permanently delete all your data. Are you absolutely sure?'
+      t('This will permanently delete all your data. Are you absolutely sure?')
     );
 
     if (!doubleConfirm) return;
@@ -81,10 +82,10 @@ export const ProfilePage = () => {
     try {
       setDeleting(true);
       await deleteProfile();
-      alert('Account deleted successfully');
+      alert(t('Account deleted successfully'));
       navigate('/');
     } catch (error) {
-      setError('Failed to delete account. Please try again.');
+      setError(t('Failed to delete account. Please try again.'));
       console.error('Delete error:', error);
     } finally {
       setDeleting(false);
@@ -121,7 +122,7 @@ export const ProfilePage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading profile...</p>
+          <p className="mt-4 text-gray-600">{t('Loading profile...')}</p>
         </div>
       </div>
     );
@@ -131,8 +132,8 @@ export const ProfilePage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Failed to load profile</p>
-          <Button size='xl' onClick={() => navigate('/login')}>Go to Login</Button>
+          <p className="text-red-600 mb-4">{t('Failed to load profile')}</p>
+          <Button size='xl' onClick={() => navigate('/login')}>{t('Go to Login')}</Button>
         </div>
       </div>
     );
@@ -143,7 +144,7 @@ export const ProfilePage = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Button onClick={handleBackToDashboard} size="md" color="secondary" disabled={deleting}>Back to Dashboard</Button>
+          <Button onClick={handleBackToDashboard} size="md" color="secondary" disabled={deleting}>{t('Back to Dashboard')}</Button>
 
           <button
             onClick={handleLogout}
@@ -162,18 +163,15 @@ export const ProfilePage = () => {
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
               />
             </svg>
-            Logout
+            {t('Logout')}
           </button>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-4xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
 
-          {/* Profile Content */}
           <div className="p-8">
-            {/* Success/Error Messages */}
             {success && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="flex items-center gap-2 text-green-700">
@@ -199,7 +197,7 @@ export const ProfilePage = () => {
             {/* Profile Information */}
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">Profile Information</h2>
+                <h2 className="text-2xl font-bold text-gray-800">{t('Profile Information')}</h2>
                 {!editMode && (
                   <button
                     onClick={() => setEditMode(true)}
@@ -208,7 +206,7 @@ export const ProfilePage = () => {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    <span className="hidden sm:inline">Edit Profile</span>
+                    <span className="hidden sm:inline">{t('Edit Profile')}</span>
                   </button>
                 )}
               </div>
@@ -218,7 +216,7 @@ export const ProfilePage = () => {
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
+                      {t('Full Name')}
                     </label>
                     <input
                       type="text"
@@ -227,13 +225,13 @@ export const ProfilePage = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your full name"
+                      placeholder={t('Enter your full name')}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
+                      {t('Email Address')}
                     </label>
                     <input
                       type="email"
@@ -242,7 +240,7 @@ export const ProfilePage = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your email address"
+                      placeholder={t('Enter your email address')}
                     />
                   </div>
 
@@ -252,7 +250,7 @@ export const ProfilePage = () => {
                       disabled={updating}
                       className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
                     >
-                      {updating ? 'Updating...' : 'Save Changes'}
+                      {updating ? t('Updating...') : t('Save Changes')}
                     </button>
                     <button
                       type="button"
@@ -260,7 +258,7 @@ export const ProfilePage = () => {
                       disabled={updating}
                       className="flex-1 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
                     >
-                      Cancel
+                      {t('Cancel')}
                     </button>
                   </div>
                 </form>
@@ -268,11 +266,11 @@ export const ProfilePage = () => {
                 /* View Mode */
                 <div className="space-y-4">
                   <div className="p-4 bg-gray-50 rounded-lg">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">{t('Full Name')}</label>
                     <p className="text-lg text-gray-800">{user.name}</p>
                   </div>
                   <div className="p-4 bg-gray-50 rounded-lg">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">{t('Email Address')}</label>
                     <p className="text-lg text-gray-800">{user.email}</p>
                   </div>
                 </div>
@@ -283,13 +281,13 @@ export const ProfilePage = () => {
               <div className="bg-red-50 border border-red-200 rounded-lg p-6">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <div>
-                    <h4 className="text-lg font-medium text-red-800 text-left">Delete Account</h4>
+                    <h4 className="text-lg font-medium text-red-800 text-left">{t('Delete Account')}</h4>
                     <p className="text-red-600 mt-1 text-left">
-                      Permanently delete your account and all associated data. This action cannot be undone.
+                      {t('Permanently delete your account and all associated data. This action cannot be undone.')}
                     </p>
                   </div>
                   <Button onClick={handleDeleteAccount} size="xl" color="primary-destructive" disabled={deleting}>
-                    {deleting ? 'Deleting...' : 'Delete Account'}
+                    {deleting ? t('Deleting...') : t('Delete Account')}
                   </Button>
                 </div>
               </div>
