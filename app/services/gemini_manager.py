@@ -11,22 +11,25 @@ def ask_ai(prompt: str):
     return {"response": answer}
 
 @router.post("/start_interview")
-def start_interview(body: dict):
-    topic = body["topic"]  # тема інтерв'ю
+def start_interview(body: dict = None):
     session_id = str(uuid4())
+
+    topic = body.get("topic") if body else "Загальні питання інтерв'ю направлені на оцінку кандидата та його Soft навички."
 
     prompt = build_interview_prompt(topic)
     response = ask_gemini(prompt)
 
-    # зберігаємо питання в сесії (тимчасово)
     session_store[session_id] = {
-        "questions": response["questions"]
+        "topic": topic,
+        "questions": response.get("questions", [])
     }
 
     return {
         "session_id": session_id,
-        "questions": response["questions"]
+        "topic": topic,
+        "questions": session_store[session_id]["questions"]
     }
+
 
 
 @router.post("/submit_answers")

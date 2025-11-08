@@ -15,12 +15,6 @@ app.include_router(google_router)
 app.include_router(account_router)
 app.include_router(gemini_router)
 
+app.mount("/", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "dist"), html=True), name="frontend")
 
-# Отдаем статические файлы
-app.mount("/assets", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "dist", "assets")), name="assets")
-
-# Catch-all для React SPA
-@app.get("/{full_path:path}")
-async def spa_router(full_path: str):
-    return FileResponse(os.path.join(BASE_DIR, "frontend", "dist", "index.html"))
 
