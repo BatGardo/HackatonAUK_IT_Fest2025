@@ -32,7 +32,7 @@ export const authAPI = {
     try {
       const response = await api.get<User>('/account/me');
       console.log('Profile response data:', response.data);
-      return response.data;
+      return response;
     } catch (error) {
       console.error('Failed to get profile:', error);
       throw error;

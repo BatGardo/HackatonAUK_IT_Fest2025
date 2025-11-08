@@ -1,4 +1,4 @@
-import api, { type ApiResponse } from './axios';
+import api from './axios';
 
 export interface AIResponse {
     response: string;
