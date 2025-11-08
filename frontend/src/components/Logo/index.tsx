@@ -1,7 +1,8 @@
-import { type FC } from 'react';
+import { type FC } from "react";
+import logoSrc from "@/assets/hiremind.png"; // относительный импорт через алиас @
 
 const Logo: FC = () => (
-  <img src={'src/assets/hiremind.png'} alt="HireMind Logo" className="h-20 w-auto" />
+  <img src={logoSrc} alt="HireMind Logo" className="h-20 w-auto" />
 );
 
-export default Logo; 
+export default Logo;

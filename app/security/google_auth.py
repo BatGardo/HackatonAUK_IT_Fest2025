@@ -1,12 +1,10 @@
-# app/security/google_auth.py
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import RedirectResponse
-from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.orm import Session
 import os
 import requests
 
-from app.database.database import Base, engine, get_db
+from app.database.database import get_db
 from app.database.models import User
 
 router = APIRouter()
@@ -14,6 +12,7 @@ router = APIRouter()
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("OAUTH_REDIRECT_URI") 
+
 
 @router.get("/auth/login")
 def login_with_google():
@@ -26,10 +25,10 @@ def login_with_google():
     )
     return RedirectResponse(google_auth_url)
 
+
 @router.get("/auth/callback")
 def google_callback(request: Request, db: Session = Depends(get_db)):
     code = request.query_params.get("code")
-    print("Google AUTH CODE:", code)  # <--- LOG
 
     token_data = {
         "code": code,
@@ -46,20 +45,10 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
     access_token = token_response.get("access_token")
     id_token = token_response.get("id_token")
 
-
-    print("TOKEN RESPONSE:", token_response)  # <--- LOG
-
-    access_token = token_response.get("access_token")
-    id_token = token_response.get("id_token")
-
-    print("ID TOKEN:", id_token)  # <--- LOG
-
     user_info = requests.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
         headers={"Authorization": f"Bearer {access_token}"}
     ).json()
-
-    print("USER INFO:", user_info)  # <--- LOG
 
     user = db.query(User).filter(User.email == user_info["email"]).first()
     if not user:
@@ -72,13 +61,22 @@ def google_callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-    return JSONResponse({
-        "message": "Logged in successfully",
-        "id_token": id_token
-    })
+    # Редірект на дашборд з куки
+    response = RedirectResponse("/dashboard")
+    response.set_cookie("access_token", access_token, httponly=True, secure=True, samesite="lax", path="/")
+    response.set_cookie("id_token", id_token, httponly=True, secure=True, samesite="lax", path="/")
+
+    return response
+
 
 @router.post("/auth/logout")
 def logout():
     res = JSONResponse({"message": "Logged out successfully"})
-    res.delete_cookie("id_token")
+    res.delete_cookie(key="id_token", path="/", httponly=True, secure=True, samesite="lax")
+    res.delete_cookie(key="access_token", path="/", httponly=True, secure=True, samesite="lax")
     return res
+
+
+@router.get("/auth/logout")
+def logout_get():
+    return logout()
