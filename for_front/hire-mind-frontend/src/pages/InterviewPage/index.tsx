@@ -2,6 +2,7 @@ import { Button } from '@/components/base/buttons/button';
 import { generateQuestions, checkAnswer } from '@/api/interview';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Question {
   id: number;
@@ -10,7 +11,8 @@ interface Question {
 
 export const InterviewPage = () => {
   const navigate = useNavigate();
-  
+  const { t } = useTranslation();
+
   // Position setup state
   const [position, setPosition] = useState('');
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
@@ -35,7 +37,7 @@ export const InterviewPage = () => {
 
   const handleStartInterview = async () => {
     if (!position.trim()) {
-      alert('Please enter a position title.');
+      alert(t('Please enter a position title.'));
       return;
     }
 
@@ -70,18 +72,18 @@ export const InterviewPage = () => {
       } else {
         // Fallback to default questions if AI fails
         const defaultQuestions: Question[] = [
-          { id: 1, text: `Tell me about yourself and your background relevant to the ${position} role.` },
-          { id: 2, text: `What interests you most about this ${position} position?` },
-          { id: 3, text: `What skills do you bring to this ${position} role?` },
-          { id: 4, text: `Describe a challenging situation you've faced and how you handled it.` },
-          { id: 5, text: `Where do you see yourself in 5 years in your ${position} career?` }
+          { id: 1, text: t('Tell me about yourself and your background relevant to the {{position}} role.', { position }) },
+          { id: 2, text: t('What interests you most about this {{position}} position?', { position }) },
+          { id: 3, text: t('What skills do you bring to this {{position}} role?', { position }) },
+          { id: 4, text: t('Describe a challenging situation you\'ve faced and how you handled it.') },
+          { id: 5, text: t('Where do you see yourself in 5 years in your {{position}} career?', { position }) }
         ];
         setQuestions(defaultQuestions);
         setShowPositionForm(false);
       }
     } catch (error) {
       console.error('Failed to generate questions:', error);
-      alert('Failed to generate questions. Please try again.');
+      alert(t('Failed to generate questions. Please try again.'));
     } finally {
       setIsGeneratingQuestions(false);
     }
@@ -95,7 +97,7 @@ export const InterviewPage = () => {
 
   const handleCheckAnswer = async () => {
     if (!answer.trim()) {
-      alert('Please provide an answer before checking.');
+      alert(t('Please provide an answer before checking.'));
       return;
     }
 
@@ -110,7 +112,7 @@ export const InterviewPage = () => {
 
       // Use AI to check the answer
       const aiFeedback = await checkAnswer(currentQuestion.text, answer);
-      setFeedback(aiFeedback || 'Great answer! Keep up the good work.');
+      setFeedback(aiFeedback || t('Great answer! Keep up the good work.'));
       setShowFeedback(true);
     } catch (error) {
       console.error('Error checking answer:', error);
@@ -118,11 +120,11 @@ export const InterviewPage = () => {
       const wordCount = answer.trim().split(/\s+/).length;
       let fallbackFeedback = '';
       if (wordCount < 10) {
-        fallbackFeedback = "Consider providing more detail in your answer. Employers typically appreciate comprehensive responses that showcase your experience and thought process.";
+        fallbackFeedback = t('Consider providing more detail in your answer. Employers typically appreciate comprehensive responses that showcase your experience and thought process.');
       } else if (wordCount > 100) {
-        fallbackFeedback = "Your answer is quite detailed, which is good! Just make sure to stay concise and focused on the key points during an actual interview.";
+        fallbackFeedback = t('Your answer is quite detailed, which is good! Just make sure to stay concise and focused on the key points during an actual interview.');
       } else {
-        fallbackFeedback = "Great answer! You've provided a good level of detail while staying focused. This demonstrates clear communication skills.";
+        fallbackFeedback = t('Great answer! You\'ve provided a good level of detail while staying focused. This demonstrates clear communication skills.');
       }
       setFeedback(fallbackFeedback);
       setShowFeedback(true);
@@ -133,7 +135,7 @@ export const InterviewPage = () => {
 
   const handleNextQuestion = () => {
     if (isLastQuestion) {
-      alert('Interview practice completed! Great job!');
+      alert(t('Interview practice completed! Great job!'));
       navigate('/dashboard');
     } else {
       setCurrentQuestionIndex(prev => prev + 1);
@@ -160,21 +162,21 @@ export const InterviewPage = () => {
           {/* Desktop layout - single row */}
           <div className="hidden sm:flex justify-between items-center">
             <Button onClick={handleBackToDashboard} size="md" color="secondary">
-              Back to Dashboard
+              {t('Back to Dashboard')}
             </Button>
 
             <div className="text-center">
-              <h1 className="text-xl font-semibold text-gray-800">Interview Practice</h1>
+              <h1 className="text-xl font-semibold text-gray-800">{t('Interview Practice')}</h1>
               {!showPositionForm && questions.length > 0 && (
                 <p className="text-sm text-gray-600">
-                  Question {currentQuestionIndex + 1} of {questions.length}
+                  {t('Question {{current}} of {{total}}', { current: currentQuestionIndex + 1, total: questions.length })}
                 </p>
               )}
             </div>
 
             {!showPositionForm && questions.length > 0 && (
               <div className="w-32 text-right">
-                <div className="text-sm text-gray-600 mb-1">Progress</div>
+                <div className="text-sm text-gray-600 mb-1">{t('Progress')}</div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
@@ -207,10 +209,10 @@ export const InterviewPage = () => {
               </Button>
 
               <div className="text-center">
-                <h1 className="text-lg font-semibold text-gray-800">Interview Practice</h1>
+                <h1 className="text-lg font-semibold text-gray-800">{t('Interview Practice')}</h1>
                 {!showPositionForm && questions.length > 0 && (
                   <p className="text-xs text-gray-600">
-                    Question {currentQuestionIndex + 1} of {questions.length}
+                    {t('Question {{current}} of {{total}}', { current: currentQuestionIndex + 1, total: questions.length })}
                   </p>
                 )}
               </div>
@@ -223,7 +225,7 @@ export const InterviewPage = () => {
               <div className="pt-3 border-t border-gray-100">
                 <div className="w-full">
                   <div className="flex justify-between items-center mb-1">
-                    <div className="text-xs text-gray-600">Progress</div>
+                    <div className="text-xs text-gray-600">{t('Progress')}</div>
                     <div className="text-xs text-gray-500">{Math.round(progress)}%</div>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -258,21 +260,21 @@ export const InterviewPage = () => {
                     />
                     </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Start Your Interview Practice</h2>
-                <p className="text-gray-600">Tell us the position you're applying for and we'll generate personalized interview questions for you.</p>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">{t('Start Your Interview Practice')}</h2>
+                <p className="text-gray-600">{t('Tell us the position you\'re applying for and we\'ll generate personalized interview questions for you.')}</p>
               </div>
 
               <div className="space-y-4">
                 <div className="text-left">
                   <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-2">
-                    Position Title
+                    {t('Position Title')}
                   </label>
                   <input
                     type="text"
                     id="position"
                     value={position}
                     onChange={(e) => setPosition(e.target.value)}
-                    placeholder="e.g. Software Engineer, Marketing Manager, Data Analyst..."
+                    placeholder={t('e.g. Software Engineer, Marketing Manager, Data Analyst...')}
                     className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     disabled={isGeneratingQuestions}
                   />
@@ -286,10 +288,10 @@ export const InterviewPage = () => {
                   {isGeneratingQuestions ? (
                     <span className="flex items-center justify-center gap-2">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      Generating Questions...
+                      {t('Generating Questions...')}
                     </span>
                   ) : (
-                    'Start Interview Practice'
+                    t('Start Interview Practice')
                   )}
                 </button>
               </div>
@@ -304,7 +306,7 @@ export const InterviewPage = () => {
                     {position}
                   </span>
                   <span className="text-sm text-gray-500">
-                    Question {currentQuestionIndex + 1}
+                    {t('Question {{current}}', { current: currentQuestionIndex + 1 })}
                   </span>
                 </div>
                 
@@ -316,21 +318,21 @@ export const InterviewPage = () => {
               {/* Answer Section */}
               <div className="mb-8">
                 <label htmlFor="answer" className="block text-lg font-medium text-gray-700 mb-4">
-                  Your Answer
+                  {t('Your Answer')}
                 </label>
                 <textarea
                   id="answer"
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Type your answer here... Take your time to think through your response."
+                  placeholder={t('Type your answer here... Take your time to think through your response.')}
                   className="w-full h-64 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 leading-relaxed"
                 />
                 <div className="flex justify-between items-center mt-2">
                   <div className="text-sm text-gray-500">
-                    Word count: {answer.trim() ? answer.trim().split(/\s+/).length : 0}
+                    {t('Word count: {{count}}', { count: answer.trim() ? answer.trim().split(/\s+/).length : 0 })}
                   </div>
                   <div className="text-sm text-gray-500">
-                    Tip: Aim for 50-100 words for a good response
+                    {t('Tip: Aim for 50-100 words for a good response')}
                   </div>
                 </div>
               </div>
@@ -338,7 +340,7 @@ export const InterviewPage = () => {
               {/* Feedback Section */}
               {showFeedback && feedback && (
                 <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="text-lg font-medium text-blue-800 mb-2">Feedback</h3>
+                  <h3 className="text-lg font-medium text-blue-800 mb-2">{t('Feedback')}</h3>
                   <div 
                     className="text-blue-700"
                     dangerouslySetInnerHTML={{ __html: formatFeedback(feedback) }}
@@ -355,7 +357,7 @@ export const InterviewPage = () => {
                     disabled={currentQuestionIndex === 0}
                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm"
                   >
-                    Previous
+                    {t('Previous')}
                   </button>
                 </div>
 
@@ -369,10 +371,10 @@ export const InterviewPage = () => {
                     {isChecking ? (
                       <span className="flex items-center justify-center gap-2">
                         <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                        Checking...
+                        {t('Checking...')}
                       </span>
                     ) : (
-                      'Check Answer'
+                      t('Check Answer')
                     )}
                   </button>
 
@@ -381,7 +383,7 @@ export const InterviewPage = () => {
                       onClick={handleNextQuestion}
                       className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors text-sm"
                     >
-                      {isLastQuestion ? 'Finish Interview' : 'Next Question'}
+                      {isLastQuestion ? t('Finish Interview') : t('Next Question')}
                     </button>
                   )}
                 </div>
@@ -412,7 +414,7 @@ export const InterviewPage = () => {
                   ))}
                 </div>
                 <p className="text-center text-sm text-gray-500 mt-2">
-                  Click on a number to jump to that question
+                  {t('Click on a number to jump to that question')}
                 </p>
               </div>
             </>
